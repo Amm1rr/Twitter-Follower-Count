@@ -8,7 +8,10 @@
 // @match        https://x.com/*
 // @match        https://twitter.com/*
 // @grant        none
+// @updateURL    https://github.com/Amm1rr/Twitter-Follower-Count/raw/main/Twitter-Follower-Count.user.js
+// @downloadURL  https://github.com/Amm1rr/Twitter-Follower-Count/raw/main/Twitter-Follower-Count.user.js
 // ==/UserScript==
+
 
 (function () {
   "use strict";
