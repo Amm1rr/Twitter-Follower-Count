@@ -1,140 +1,141 @@
 // ==UserScript==
 // @name         Twitter Follower Count
-// @namespace    https://github.com/NabiKAZ/Twitter-Follower-Count
-// @version      0.1.0
-// @description  Display the number of followers of Twitter users
-// @author       Nabi K.A.Z. <nabikaz@gmail.com> | www.nabi.ir | @NabiKAZ
+// @namespace    amm1rr.com.twitter.follower.count
+// @version      0.2.0
+// @homepage     https://github.com/Amm1rr/Twitter-Follower-Count/
+// @description  Display the number of followers of X users
+// @author       Mohammad Khani (Original Author Nabi K.A.Z. <nabikaz@gmail.com> | www.nabi.ir | @NabiKAZ)
+// @match        https://x.com/*
 // @match        https://twitter.com/*
 // @grant        none
 // ==/UserScript==
 
-(function() {
-    'use strict';
+(function () {
+  "use strict";
 
-    // Array to store all users
-    var allUsers = [];
+  // Store user data with follower counts
+  var allUsers = [];
 
-    // Save references to the original methods
-    var originalSend = XMLHttpRequest.prototype.send;
+  // Keep reference to the original XMLHttpRequest send method
+  var originalSend = XMLHttpRequest.prototype.send;
 
-    // Override the send method
-    XMLHttpRequest.prototype.send = function() {
-        // Save a reference to the current instance
-        var xhr = this;
+  // Override the send method to intercept responses
+  XMLHttpRequest.prototype.send = function () {
+    var xhr = this;
 
-        // Add an event listener to the load event
-        xhr.addEventListener('load', function() {
-            // Parse the response text as JSON
-            try {
-                var responseJSON = JSON.parse(xhr.responseText);
-            } catch (error) {
-                return;
-            }
+    xhr.addEventListener("load", function () {
+      var responseData;
 
-            // Extract user data from the response
-            var users = getNames(responseJSON, 'screen_name');
-
-            // Iterate over the users
-            users.forEach(function(user) {
-                // Check if the user object contains the required properties
-                if (!user.hasOwnProperty('name') || !user.hasOwnProperty('screen_name') || !user.hasOwnProperty('followers_count') || !user.hasOwnProperty('friends_count')) return;
-
-                // Check if the user is already in the allUsers array
-                var isDuplicate = allUsers.some(item => item.screen_name === user.screen_name);
-                if (!isDuplicate) {
-                    // Add the user to the allUsers array
-                    allUsers.push({
-                        'name': user.name,
-                        'screen_name': user.screen_name,
-                        'followers_count': user.followers_count,
-                        'friends_count': user.friends_count,
-                    });
-                }
-            });
-        });
-
-        // Call the original send method
-        originalSend.apply(xhr, arguments);
-
-    };
-
-    // Recursive function to extract names from an object
-    function getNames(obj, name, result = []) {
-        for (var key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                if ("object" == typeof(obj[key])) {
-                    getNames(obj[key], name, result);
-                } else if (key == name) {
-                    result.push(obj);
-                }
-            }
+      try {
+        // Handle different response types
+        if (xhr.responseType === "" || xhr.responseType === "text") {
+          responseData = xhr.responseText;
+        } else if (xhr.responseType === "arraybuffer") {
+          responseData = new TextDecoder("utf-8").decode(xhr.response);
+        } else {
+          return; // Ignore unsupported types
         }
-        return result;
-    }
+      } catch (e) {
+        console.error("Failed to decode response:", e);
+        return;
+      }
 
-    // Main function to update follower count on Twitter profiles
-    function main() {
-        allUsers.forEach(function(user) {
-            // Find the profile links of the user
-            var linkElements = document.querySelectorAll('a[href="/' + user.screen_name + '"]');
+      try {
+        var responseJSON = JSON.parse(responseData);
+        var users = extractUsers(responseJSON, "screen_name");
 
-            // Iterate over the profile links
-            linkElements.forEach(function(linkElement) {
-                // Check if the count element already exists
-                var countElement = linkElement.querySelector('span.count-follower');
-                if (countElement) return;
+        users.forEach(function (user) {
+          if (!user.screen_name || !user.followers_count) return;
 
-                // Find the parent element of the link
-                var parentElement = linkElement.parentNode;
-                if (!parentElement) return;
-
-                // Find the image element in the parent element
-                var imgElement = parentElement.querySelector('img[draggable=true]');
-                if (!imgElement) return;
-
-                // Update styles of parent
-                parentElement.style.overflow = 'inherit';
-                parentElement.style.clipPath = 'none';
-
-                // Find and update style of closest parent element
-                var closestElement = parentElement.closest('ul');
-                if (closestElement) {
-                    closestElement.style.overflow = 'inherit';
-                }
-
-                // Create and append the count element
-                var newSpanElement = document.createElement('span');
-                newSpanElement.className = 'count-follower';
-                newSpanElement.innerText = user.followers_count.toLocaleString('en-US');
-                newSpanElement.style.position = 'absolute';
-                newSpanElement.style.top = '-9px';
-                newSpanElement.style.left = '50%';
-                newSpanElement.style.transform = 'translate(-50%)';
-                newSpanElement.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
-                newSpanElement.style.fontSize = '9px';
-                newSpanElement.style.fontWeight = '400';
-                newSpanElement.style.whiteSpace = 'nowrap';
-                newSpanElement.style.color = 'white';
-                newSpanElement.style.backgroundColor = '#1d9bf0';
-                newSpanElement.style.border = '1px solid white';
-                newSpanElement.style.borderRadius = '9999px';
-                newSpanElement.style.padding = '0px 4px 1px';
-
-                // Append the count element to the link element
-                linkElement.appendChild(newSpanElement);
-
+          var exists = allUsers.some((u) => u.screen_name === user.screen_name);
+          if (!exists) {
+            allUsers.push({
+              name: user.name,
+              screen_name: user.screen_name,
+              followers_count: user.followers_count,
+              formatted_followers_count: formatFollowers(user.followers_count),
+                friends_count: user.friends_count,
             });
+          }
         });
-    }
-
-    // Call the main function on scroll event
-    document.addEventListener("scroll", (event) => {
-        main();
+      } catch (e) {
+        // Silently fail if JSON parsing fails
+      }
     });
 
-    // Call the main function on page load
-    window.addEventListener('load', () => {
-        main();
-    }, false);
+    originalSend.apply(xhr, arguments);
+  };
 
+  // Recursively search object properties for user data containing a specific key
+  function extractUsers(obj, key, result = []) {
+    for (var prop in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+        if (typeof obj[prop] === "object" && obj[prop] !== null) {
+          extractUsers(obj[prop], key, result);
+        } else if (prop === key) {
+          result.push(obj);
+        }
+      }
+    }
+    return result;
+  }
+
+  // Format large numbers with K/M suffix
+  function formatFollowers(number) {
+    if (number >= 1000000) {
+      return (number / 1000000).toFixed(1) + "M";
+    } else if (number >= 1000) {
+      return (number / 1000).toFixed(1) + "K";
+    }
+    return number.toString();
+  }
+
+  // Update the follower count under profile images
+  function updateFollowerCounts() {
+    allUsers.forEach(function (user) {
+      var profileLinks = document.querySelectorAll(
+        'a[href="/' + user.screen_name + '"]'
+      );
+
+      profileLinks.forEach(function (link) {
+        if (link.querySelector(".count-follower")) return;
+
+        var parent = link.parentNode;
+        if (!parent) return;
+
+        var img = parent.querySelector('img[draggable="true"]');
+        if (!img) return;
+
+        parent.style.overflow = "inherit";
+        parent.style.clipPath = "none";
+
+        var closestUl = parent.closest("ul");
+        if (closestUl) {
+          closestUl.style.overflow = "inherit";
+        }
+
+        var span = document.createElement("span");
+        span.className = "count-follower";
+        span.innerText = user.formatted_followers_count;
+        span.style.position = "absolute";
+        span.style.bottom = "-2px";
+        span.style.left = "50%";
+        span.style.transform = "translate(-50%)";
+        span.style.fontSize = "8px";
+        span.style.fontWeight = "bold";
+        span.style.color = "#ffffff";
+        span.style.backgroundColor = "rgb(29, 155, 240)";
+        span.style.border = "1px solid #0867d2";
+        span.style.borderRadius = "9999px";
+        span.style.padding = "0px 4px";
+        span.style.whiteSpace = "nowrap";
+
+        link.appendChild(span);
+      });
+    });
+  }
+
+  // Trigger follower count updates on page load and scroll
+  window.addEventListener("load", updateFollowerCounts);
+  document.addEventListener("scroll", updateFollowerCounts);
 })();
