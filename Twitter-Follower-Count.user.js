@@ -4,7 +4,7 @@
 // @version      0.3.1
 // @homepage     https://github.com/Amm1rr/Twitter-Follower-Count/
 // @description  Display the number of followers for Twitter accounts
-// @author       Mohammad Khani (@m_khani65) (Original Author Nabi K.A.Z. | @NabiKAZ)
+// @author       Mohammad Khani (@m_khani65)
 // @match        https://x.com/*
 // @match        https://twitter.com/*
 // @grant        none
