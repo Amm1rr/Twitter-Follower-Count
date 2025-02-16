@@ -1,12 +1,20 @@
 # Twitter Follower Count
 
-In the web version of Twitter, to see the number of followers of a user, you can hold the mouse over their profile picture. However, when there are many users involved (such as when receiving notifications from multiple users or browsing Twitter), checking individual profiles can be time-consuming.
+Tired of hovering over profile pictures on Twitter just to see follower counts? This lightweight userscript automatically displays each user's follower count above their profile image—no extra clicks required. Simply scroll through your Twitter feed and get an instant overview.
 
-This lightweight userscript automatically displays the number of followers above the profile picture of each user, requiring no clicks. A quick glance at the page is enough to see follower counts.
+---
 
-To avoid additional overhead, the script is executed after each scroll. If the follower count does not appear initially, just scroll the page once more.
+## Features
+
+- **Automatic Display:** Follower counts appear directly above profile images.
+- **Dynamic Updates:** Counts refresh automatically as you scroll.
+- **Lightweight:** Minimal overhead ensures a smooth browsing experience.
+
+---
 
 ## Installation
+
+Before installing, ensure you have a userscript manager installed (such as [Tampermonkey](https://tampermonkey.net/) or [Violentmonkey](https://violentmonkey.github.io/)).
 
 | Userscript Manager                                                    | Supported Platforms                                                                                                                                                                                                                                                                                                                                                 |
 | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -14,18 +22,36 @@ To avoid additional overhead, the script is executed after each scroll. If the f
 | [Tampermonkey](https://www.tampermonkey.net/)                         | ![Chrome](https://img.shields.io/badge/Chrome-✓-success?logo=google-chrome) ![Edge](https://img.shields.io/badge/Edge-✓-success?logo=microsoft-edge) ![Safari](https://img.shields.io/badge/Safari-✓-success?logo=safari) ![Opera](https://img.shields.io/badge/Opera-✓-success?logo=opera) ![Firefox](https://img.shields.io/badge/Firefox-✓-success?logo=firefox) |
 | [Userscripts](https://apps.apple.com/us/app/userscripts/id1463298887) | ![iOS](https://img.shields.io/badge/iOS-✓-success?logo=apple)                                                                                                                                                                                                                                                                                                       |
 
-First, install a userscript manager like [Tampermonkey](https://tampermonkey.net/) for supported browsers: `Chrome`, `Microsoft Edge`, `Safari`, `Firefox`, `Opera`, and more from [here](https://tampermonkey.net/).
+1. **Install a userscript manager** for your browser.
+2. **Install the userscript** by visiting the [Twitter Follower Count installation link](https://github.com/Amm1rr/Twitter-Follower-Count/raw/main/Twitter-Follower-Count.user.js) and following the prompts (drag-and-drop or use the manager’s dashboard).
+3. **Refresh your Twitter page.** If the follower counts don't appear immediately, simply scroll down a bit.
 
-Next, you can install the [`Twitter-Follower-Count.user.js`](https://github.com/Amm1rr/Twitter-Follower-Count/raw/main/Twitter-Follower-Count.user.js) script by dragging and dropping the file into your browser, or adding it via the Tampermonkey dashboard.
+---
 
 ## Screenshot
 
 [<img src="Screenshot.jpg" alt="Twitter Follower Count Screenshot" width="400">](Screenshot.jpg)
 
+---
+
 ## Donation
 
-If this project was helpful to you and you would like to support its development, you can make me happy by giving a ⭐ Star at the top of this GitHub page.
+If you find this project useful, please consider giving it a ⭐ Star on GitHub.
 
-If you wish to contribute financially, you can buy me a coffee via PayPal:
+For financial support, you can buy me a coffee via PayPal:
 
 [![Donate via PayPal](https://img.shields.io/badge/Donate-PayPal-blue?logo=paypal)](https://www.paypal.com/donate/?hosted_button_id=DUZBXEKUJGKLE)
+
+---
+
+## License
+
+This project is available under the [MIT License](https://opensource.org/licenses/MIT).
+
+---
+
+## About
+
+**Developed by:** [Mohammad Khani](https://twitter.com/m_khani65) - [Amm1rr.com](https://amm1rr.com)
+
+**Original Author:** [Nabi K.A.Z.](https://twitter.com/NabiKAZ) – [nabi.ir](https://www.nabi.ir)
