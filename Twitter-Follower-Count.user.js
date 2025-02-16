@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         Twitter Follower Count
 // @namespace    amm1rr.com.twitter.follower.count
-// @version      0.3.0
+// @version      0.3.1
 // @homepage     https://github.com/Amm1rr/Twitter-Follower-Count/
-// @description  Display the number of followers of X users
+// @description  Display the number of followers for Twitter accounts by retrieving data from the API and appending the count next to profile images.
 // @author       Mohammad Khani (Original Author Nabi K.A.Z. <nabikaz@gmail.com> | www.nabi.ir | @NabiKAZ)
 // @match        https://x.com/*
 // @match        https://twitter.com/*
@@ -15,131 +15,183 @@
 (function () {
   "use strict";
 
+  /**
+   * Cache to store user data to prevent redundant processing.
+   * Key: screen_name, Value: user details object.
+   * @type {Map<string, Object>}
+   */
   const userCache = new Map();
-  const CSS_CLASS = "x-follower-count";
-  let isUpdating = false;
 
-  // Add global styles
-  const style = document.createElement("style");
-  style.textContent = `
-    .${CSS_CLASS} {
-      position: absolute;
-      bottom: -2px;
-      left: 50%;
-      transform: translateX(-50%);
-      font: bold 8px/1.2 sans-serif;
-      color: #fff !important;
-      background: rgb(29, 155, 240);
-      border: 1px solid #0867d2;
-      border-radius: 9999px;
-      padding: 0 4px;
-      white-space: nowrap;
-      z-index: 999;
-      pointer-events: none;
-    }
-    
-    [data-follower-container] {
-      position: relative !important;
-      overflow: visible !important;
-      clip-path: none !important;
-    }
-  `;
-  document.head.appendChild(style);
-
-  // XMLHttpRequest interception
+  /**
+   * Store reference to the original XMLHttpRequest.send method.
+   */
   const originalSend = XMLHttpRequest.prototype.send;
+
+  /**
+   * Override XMLHttpRequest.send to intercept API responses.
+   * Filters for responses from Twitter API endpoints and extracts user data.
+   *
+   * @param {...any} args - Arguments passed to the original send method.
+   */
   XMLHttpRequest.prototype.send = function (...args) {
-    this.addEventListener("load", handleXhrResponse, { once: true });
+    this.addEventListener("load", () => {
+      // Process only API responses relevant to Twitter data.
+      if (!this.responseURL || !this.responseURL.includes("/i/api/")) return;
+
+      let responseData;
+      try {
+        if (this.responseType === "" || this.responseType === "text") {
+          responseData = this.responseText;
+        } else if (this.responseType === "arraybuffer") {
+          responseData = new TextDecoder("utf-8").decode(this.response);
+        } else {
+          return;
+        }
+      } catch (e) {
+        console.error("Failed to decode response:", e);
+        return;
+      }
+
+      try {
+        const responseJSON = JSON.parse(responseData);
+        const users = extractUsers(responseJSON, "screen_name");
+        users.forEach((user) => {
+          if (!user.screen_name || !user.followers_count) return;
+          // Cache the user data if not already present.
+          if (!userCache.has(user.screen_name)) {
+            userCache.set(user.screen_name, {
+              name: user.name,
+              screen_name: user.screen_name,
+              followers_count: user.followers_count,
+              formatted_followers_count: formatFollowers(user.followers_count),
+              friends_count: user.friends_count,
+            });
+          }
+        });
+      } catch (e) {
+        // Fail silently if JSON parsing fails.
+      }
+    });
     originalSend.apply(this, args);
   };
 
-  function handleXhrResponse() {
-    try {
-      const response =
-        this.responseType === "arraybuffer"
-          ? new TextDecoder("utf-8").decode(this.response)
-          : this.responseText;
-
-      if (!response) return;
-
-      const data = JSON.parse(response);
-      traverseAndCacheUsers(data);
-    } catch (e) {
-      // Ignore non-JSON responses
-    }
-  }
-
-  function traverseAndCacheUsers(obj) {
-    if (!obj || typeof obj !== "object") return;
-
-    if (obj.screen_name && typeof obj.followers_count === "number") {
-      const existing = userCache.get(obj.screen_name);
-      if (!existing || existing.followers_count !== obj.followers_count) {
-        userCache.set(obj.screen_name, {
-          count: obj.followers_count,
-          formatted: formatNumber(obj.followers_count),
-        });
-        scheduleUIUpdate();
-      }
-      return;
-    }
-
-    Object.values(obj).forEach((value) => {
+  /**
+   * Recursively traverse an object to extract all sub-objects containing a specific key.
+   *
+   * @param {Object} obj - The object to traverse.
+   * @param {string} key - The key to search for (e.g., "screen_name").
+   * @param {Array<Object>} [result=[]] - Array to accumulate found objects.
+   * @returns {Array<Object>} Array of objects that contain the specified key.
+   */
+  const extractUsers = (obj, key, result = []) => {
+    for (const [prop, value] of Object.entries(obj)) {
       if (value && typeof value === "object") {
-        traverseAndCacheUsers(value);
+        extractUsers(value, key, result);
+      } else if (prop === key) {
+        result.push(obj);
       }
+    }
+    return result;
+  };
+
+  /**
+   * Format a number into a human-readable string with K/M suffix.
+   *
+   * @param {number} number - The number of followers.
+   * @returns {string} Formatted number string.
+   */
+  const formatFollowers = (number) => {
+    if (number >= 1000000) return `${(number / 1000000).toFixed(1)}M`;
+    if (number >= 1000) return `${(number / 1000).toFixed(1)}K`;
+    return number.toString();
+  };
+
+  /**
+   * Create a DOM element (span) to display the formatted follower count.
+   *
+   * @param {string} formattedCount - The formatted follower count string.
+   * @returns {HTMLElement} The created span element.
+   */
+  const createFollowerCountElement = (formattedCount) => {
+    const span = document.createElement("span");
+    span.className = "count-follower";
+    span.innerText = formattedCount;
+    Object.assign(span.style, {
+      position: "absolute",
+      bottom: "-2px",
+      left: "50%",
+      transform: "translate(-50%)",
+      fontSize: "8px",
+      fontWeight: "bold",
+      color: "#ffffff",
+      backgroundColor: "rgb(29, 155, 240)",
+      border: "1px solid #0867d2",
+      borderRadius: "9999px",
+      padding: "0px 4px",
+      whiteSpace: "nowrap",
     });
-  }
+    return span;
+  };
 
-  function formatNumber(num) {
-    if (num >= 1e6) return `${(num / 1e6).toFixed(1)}M`;
-    if (num >= 1e3) return `${(num / 1e3).toFixed(1)}K`;
-    return num.toString();
-  }
+  /**
+   * Update the DOM to display follower counts for all cached users.
+   * It searches for profile links in the document and appends the follower count
+   * element next to the profile image.
+   */
+  const updateFollowerCounts = () => {
+    userCache.forEach((user, screen_name) => {
+      const profileLinks = document.querySelectorAll(
+        `a[href="/${screen_name}"]`
+      );
+      profileLinks.forEach((link) => {
+        // Skip if follower count is already appended.
+        if (link.querySelector(".count-follower")) return;
+        const parent = link.parentNode;
+        if (!parent) return;
+        const img = parent.querySelector('img[draggable="true"]');
+        if (!img) return;
 
-  // UI Update Logic
-  function updateUI() {
-    if (isUpdating) return;
-    isUpdating = true;
+        // Adjust styles for proper display.
+        parent.style.overflow = "inherit";
+        parent.style.clipPath = "none";
+        const closestUl = parent.closest("ul");
+        if (closestUl) {
+          closestUl.style.overflow = "inherit";
+        }
 
-    document.querySelectorAll('a[href^="/"]').forEach((link) => {
-      const path = link.getAttribute("href");
-      if (!path || path.startsWith("/i/")) return;
-
-      const screenName = path.split("/")[1]?.split("?")[0];
-      if (!screenName) return;
-
-      const userData = userCache.get(screenName);
-      if (!userData) return;
-
-      const container = link.closest('div[role="link"]');
-      if (!container || container.querySelector(`.${CSS_CLASS}`)) return;
-
-      container.setAttribute("data-follower-container", "");
-      const badge = document.createElement("span");
-      badge.className = CSS_CLASS;
-      badge.textContent = userData.formatted;
-      link.appendChild(badge);
+        const span = createFollowerCountElement(user.formatted_followers_count);
+        link.appendChild(span);
+      });
     });
+  };
 
-    isUpdating = false;
-  }
+  /**
+   * Debounce function to limit the rate at which a function is executed.
+   *
+   * @param {Function} func - The function to debounce.
+   * @param {number} delay - The delay in milliseconds.
+   * @returns {Function} A debounced version of the given function.
+   */
+  const debounce = (func, delay) => {
+    let timeoutId;
+    return (...args) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => func(...args), delay);
+    };
+  };
 
-  // Optimized update scheduling
-  let updateTimer;
-  function scheduleUIUpdate() {
-    clearTimeout(updateTimer);
-    updateTimer = setTimeout(updateUI, 300);
-  }
+  // Debounced version of updateFollowerCounts to reduce excessive calls.
+  const debouncedUpdateFollowerCounts = debounce(updateFollowerCounts, 100);
 
-  // Event Listeners
-  new MutationObserver(scheduleUIUpdate).observe(document.body, {
-    subtree: true,
-    childList: true,
-  });
+  // Update follower counts on initial page load and during scroll events.
+  window.addEventListener("load", debouncedUpdateFollowerCounts);
+  document.addEventListener("scroll", debouncedUpdateFollowerCounts);
 
-  window.addEventListener("load", updateUI);
-  document.addEventListener("scroll", () => requestAnimationFrame(updateUI), {
-    passive: true,
-  });
+  /**
+   * Use MutationObserver to monitor changes in the DOM.
+   * This helps in detecting dynamically added elements (e.g., new user profiles)
+   * and triggers an update to append follower counts accordingly.
+   */
+  const observer = new MutationObserver(debouncedUpdateFollowerCounts);
+  observer.observe(document.body, { childList: true, subtree: true });
 })();
