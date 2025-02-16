@@ -3,8 +3,8 @@
 // @namespace    amm1rr.com.twitter.follower.count
 // @version      0.3.1
 // @homepage     https://github.com/Amm1rr/Twitter-Follower-Count/
-// @description  Display the number of followers for Twitter accounts by retrieving data from the API and appending the count next to profile images.
-// @author       Mohammad Khani (Original Author Nabi K.A.Z. <nabikaz@gmail.com> | www.nabi.ir | @NabiKAZ)
+// @description  Display the number of followers for Twitter accounts
+// @author       Mohammad Khani (@m_khani65) (Original Author Nabi K.A.Z. | @NabiKAZ)
 // @match        https://x.com/*
 // @match        https://twitter.com/*
 // @grant        none
