@@ -40,23 +40,16 @@ Ensure you have a userscript manager installed before proceeding:
 
 Enjoying this script? Your support keeps it going! Here’s how you can contribute:
 
-- ⭐ ⭐ **Star the Repository** on GitHub.
-- ☕ **Donate to the Maintainer:**
-  [![Donate via PayPal](https://img.shields.io/badge/Donate-PayPal-blue?logo=paypal)](https://www.paypal.com/donate/?hosted_button_id=DUZBXEKUJGKLE)
-- 💸 **Support the Original Author:**
-  - **USDT (TRC20):** `TEHjxGqu5Y2ExKBWzArBJEmrtzz3mgV5Hb`
+- ⭐ **Star the Repository** on GitHub.
+- ☕ **Donate to support:** [![Donate via PayPal](https://img.shields.io/badge/Donate-PayPal-blue?logo=paypal)](https://www.paypal.com/donate/?hosted_button_id=DUZBXEKUJGKLE)
 
 ---
 
-## 🏆 Credits
+## Credits
 
 This project is developed and maintained by:
 
-- **Maintainer:** [Mohammad Khani](https://twitter.com/m_khani65) – [Amm1rr.com](https://amm1rr.com)
-
-### Based on the Original Work by:
-- **Original Author:** [Nabi K.A.Z.](https://twitter.com/NabiKAZ) – [nabi.ir](https://www.nabi.ir)
-- **Original Project:** [Twitter Follower Count](https://github.com/NabiKAZ/Twitter-Follower-Count/)
+- [Mohammad Khani](https://twitter.com/m_khani65) – [Amm1rr.com](https://amm1rr.com)
 
 ---
 
