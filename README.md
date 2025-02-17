@@ -1,57 +1,57 @@
-# Twitter Follower Count
+# Twitter Follower Count Userscript
 
-Tired of hovering over profile pictures on Twitter just to see follower counts? This lightweight userscript automatically displays each user's follower count above their profile image—no extra clicks required. Simply scroll through your Twitter feed and get an instant overview.
+Effortlessly view follower counts on Twitter without the need to hover over profiles. This lightweight userscript displays follower counts directly above profile images as you scroll—providing instant insights at a glance.
 
----
-
-## Features
-
-- **Automatic Display:** Follower counts appear directly above profile images.
-- **Dynamic Updates:** Counts refresh automatically as you scroll.
-- **Lightweight:** Minimal overhead ensures a smooth browsing experience.
+<p align="center">
+  <a href="Screenshot.jpg" target="_blank">
+    <img src="Screenshot.jpg" alt="Twitter Follower Count Screenshot" width="400">
+  </a>
+</p>
 
 ---
 
-## Installation
+## Key Features
 
-Before installing, ensure you have a userscript manager installed (such as [Tampermonkey](https://tampermonkey.net/) or [Violentmonkey](https://violentmonkey.github.io/)).
+- **Real-Time Display:** Follower counts automatically appear above profile pictures.
+- **Live Updates:** Seamlessly adapts as you scroll through the timeline.
+- **Performance Optimized:** Designed for minimal impact on browsing speed.
 
-| Userscript Manager                                                    | Supported Platforms                                                                                                                                                                                                                                                                                                                                                 |
+---
+
+## Installation Guide
+
+Ensure you have a userscript manager installed before proceeding:
+
+| Userscript Manager                                                    | Supported Browsers                                                                                                                                                                                                                                                                                                                                                  |
 | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **[Violentmonkey](https://violentmonkey.github.io/)** _(Recommended)_ | ![Chrome](https://img.shields.io/badge/Chrome-✓-success?logo=google-chrome) ![Firefox](https://img.shields.io/badge/Firefox-✓-success?logo=firefox) ![Edge](https://img.shields.io/badge/Edge-✓-success?logo=microsoft-edge)                                                                                                                                        |
 | [Tampermonkey](https://www.tampermonkey.net/)                         | ![Chrome](https://img.shields.io/badge/Chrome-✓-success?logo=google-chrome) ![Edge](https://img.shields.io/badge/Edge-✓-success?logo=microsoft-edge) ![Safari](https://img.shields.io/badge/Safari-✓-success?logo=safari) ![Opera](https://img.shields.io/badge/Opera-✓-success?logo=opera) ![Firefox](https://img.shields.io/badge/Firefox-✓-success?logo=firefox) |
 | [Userscripts](https://apps.apple.com/us/app/userscripts/id1463298887) | ![iOS](https://img.shields.io/badge/iOS-✓-success?logo=apple)                                                                                                                                                                                                                                                                                                       |
 
-1. **Install a userscript manager** for your browser.
-2. **Install the userscript** by visiting the [Twitter Follower Count installation link](https://github.com/Amm1rr/Twitter-Follower-Count/raw/main/Twitter-Follower-Count.user.js) and following the prompts (drag-and-drop or use the manager’s dashboard).
-3. **Refresh your Twitter page.** If the follower counts don't appear immediately, simply scroll down a bit.
+### Steps to Install
+
+1. **Install a userscript manager** compatible with your browser.
+2. **Install the userscript**: [Click here to install Twitter Follower Count](https://github.com/Amm1rr/Twitter-Follower-Count/raw/main/Twitter-Follower-Count.user.js).
+3. **Open Twitter and Refresh**: The follower counts should appear as you scroll.
 
 ---
 
-## Screenshot
+## Support the Project
 
-[<img src="Screenshot.jpg" alt="Twitter Follower Count Screenshot" width="400">](Screenshot.jpg)
+Enjoying this script? Show your support:
 
----
-
-## Donation
-
-If you find this project useful, please consider giving it a ⭐ Star on GitHub.
-
-For financial support, you can buy me a coffee via PayPal:
-
-[![Donate via PayPal](https://img.shields.io/badge/Donate-PayPal-blue?logo=paypal)](https://www.paypal.com/donate/?hosted_button_id=DUZBXEKUJGKLE)
+- ⭐ **Star the repository** on GitHub.
+- ☕ **Buy me a coffee:** [![Donate via PayPal](https://img.shields.io/badge/Donate-PayPal-blue?logo=paypal)](https://www.paypal.com/donate/?hosted_button_id=DUZBXEKUJGKLE)
 
 ---
 
 ## License
 
-This project is available under the [MIT License](https://opensource.org/licenses/MIT).
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
 
 ---
 
-## About
+## Credits
 
-**Developed by:** [Mohammad Khani](https://twitter.com/m_khani65) - [Amm1rr.com](https://amm1rr.com)
-
-**Original Author:** [Nabi K.A.Z.](https://twitter.com/NabiKAZ) – [nabi.ir](https://www.nabi.ir)
+- **Developed by:** [Mohammad Khani](https://twitter.com/m_khani65) – [Amm1rr.com](https://amm1rr.com)
+- **Original Author:** [Nabi K.A.Z.](https://twitter.com/NabiKAZ) – [nabi.ir](https://www.nabi.ir)
