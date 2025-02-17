@@ -10,6 +10,7 @@
 // @grant        none
 // @updateURL    https://github.com/Amm1rr/Twitter-Follower-Count/raw/main/Twitter-Follower-Count.user.js
 // @downloadURL  https://github.com/Amm1rr/Twitter-Follower-Count/raw/main/Twitter-Follower-Count.user.js
+// @license      MIT
 // ==/UserScript==
 
 (function () {
