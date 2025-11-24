@@ -1,14 +1,14 @@
 // ==UserScript==
-// @name         Twitter Follower Count
-// @namespace    amm1rr.com.twitter.follower.count
-// @version      0.3.2
-// @homepage     https://github.com/Amm1rr/Twitter-Follower-Count/
-// @description  Display the number of followers for Twitter accounts
-// @author       Mohammad Khani (@m_khani65)
-// @match        https://x.com/*
-// @match        https://twitter.com/*
-// @grant        none
-// @license      MIT
+// @name         Twitter Follower Count
+// @namespace    amm1rr.com.twitter.follower.count
+// @version      0.3.3
+// @homepage     https://github.com/Amm1rr/Twitter-Follower-Count/
+// @description  Display the number of followers for Twitter accounts
+// @author       Mohammad Khani (@m_khani65)
+// @match        https://x.com/*
+// @match        https://twitter.com/*
+// @grant        none
+// @license      MIT
 // @downloadURL  https://update.greasyfork.org/scripts/527217/Twitter%20Follower%20Count.user.js
 // @updateURL    https://update.greasyfork.org/scripts/527217/Twitter%20Follower%20Count.meta.js
 // ==/UserScript==
@@ -45,21 +45,24 @@
         responseData = decodeResponse(this);
         if (!responseData) return;
       } catch (e) {
-        console.error("Failed to decode response:", e);
+        console.error("[Twitter Follower Count] Failed to decode response:", e);
         return;
       }
 
       try {
         const responseJSON = JSON.parse(responseData);
-        const users = extractUsers(responseJSON, "screen_name");
+        // Try to extract users using the new API structure first, then fallback to legacy
+        const users = extractUsersFromNewAPI(responseJSON, "screen_name");
+
         users.forEach((user) => {
-          if (!user.screen_name || !user.followers_count) return; // Cache the user data if not already present.
+          if (!user.screen_name || !user.followers_count) return;
+          // Cache the user data if not already present
           if (!userCache.has(user.screen_name)) {
             cacheUserData(user);
           }
         });
       } catch (e) {
-        // Fail silently if JSON parsing fails.
+        // Fail silently if JSON parsing fails
       }
     });
     originalSend.apply(this, args);
@@ -86,13 +89,14 @@
    */
 
   const cacheUserData = (user) => {
-    userCache.set(user.screen_name, {
+    const userData = {
       name: user.name,
       screen_name: user.screen_name,
       followers_count: user.followers_count,
       formatted_followers_count: formatFollowers(user.followers_count),
       friends_count: user.friends_count,
-    });
+    };
+    userCache.set(user.screen_name, userData);
   };
   /**
    * Recursively traverse an object to extract all sub-objects containing a specific key.
@@ -112,6 +116,51 @@
         extractUsers(value, key, result);
       }
     }
+    return result;
+  };
+
+  /**
+   * Extract user data from the new Twitter API structure.
+   * @param {Object} obj - The response object to traverse.
+   * @param {string} key - The key to search for in legacy structures (e.g., "screen_name").
+   * @param {Array<Object>} result - Array to accumulate found objects.
+   * @returns {Array<Object>} Array of user objects containing follower data.
+   */
+  const extractUsersFromNewAPI = (obj, key = "screen_name", result = []) => {
+    if (!obj || typeof obj !== "object") return result;
+
+    // Check if this object has user data in the new structure
+    if (obj.core && obj.core.user_results && obj.core.user_results.result) {
+      const userResult = obj.core.user_results.result;
+      if (userResult.legacy && userResult.core) {
+        // Combine core info with legacy data for follower count
+        result.push({
+          name: userResult.core.name,
+          screen_name: userResult.core.screen_name,
+          followers_count: userResult.legacy.followers_count,
+          friends_count: userResult.legacy.friends_count,
+          // Keep reference to legacy object for potential future use
+          _legacy: userResult.legacy,
+        });
+      }
+    }
+
+    // Check if this object has the legacy structure (for backward compatibility)
+    if (
+      obj.hasOwnProperty(key) &&
+      obj.screen_name &&
+      obj.followers_count !== undefined
+    ) {
+      result.push(obj);
+    }
+
+    // Recursively search the entire object
+    for (const value of Object.values(obj)) {
+      if (value && typeof value === "object") {
+        extractUsersFromNewAPI(value, key, result);
+      }
+    }
+
     return result;
   };
   /**
@@ -164,14 +213,28 @@
       const profileLinks = document.querySelectorAll(
         `a[href*="/${screen_name}"]` // Modified selector to be more robust
       );
+
       profileLinks.forEach((link) => {
         // Skip if follower count is already appended.
         if (link.querySelector(".count-follower")) return;
+
+        // Check if this link contains a profile avatar (not tweet image)
+        const isProfileAvatar =
+          link.closest('[data-testid="Tweet-User-Avatar"]') ||
+          (link.querySelector('img[draggable="true"]') &&
+            !link.closest('[data-testid="tweetPhoto"]') &&
+            !link.href.includes("/status/") &&
+            !link.href.includes("/photo/"));
+
+        if (!isProfileAvatar) return;
+
         const parent = link.parentNode;
         if (!parent) return;
-        const img = parent.querySelector('img[draggable="true"]');
-        if (!img) return; // Adjust styles for proper display.
 
+        const img = parent.querySelector('img[draggable="true"]');
+        if (!img) return;
+
+        // Adjust styles for proper display.
         parent.style.overflow = "inherit";
         parent.style.clipPath = "none";
         const closestUl = parent.closest("ul");
