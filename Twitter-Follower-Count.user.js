@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Twitter Follower Count
 // @namespace    amm1rr.com.twitter.follower.count
-// @version      0.3.3
+// @version      0.3.4
 // @homepage     https://github.com/Amm1rr/Twitter-Follower-Count/
 // @description  Display the number of followers for Twitter accounts
 // @author       Mohammad Khani (@m_khani65)
@@ -164,7 +164,7 @@
     return result;
   };
   /**
-   * Format a number into a human-readable string with K/M suffix.
+   * Format a number into a human-readable string with K/M suffix or comma separation.
    *
    * @param {number} number - The number of followers.
    * @returns {string} Formatted number string.
@@ -172,8 +172,9 @@
 
   const formatFollowers = (number) => {
     if (number >= 1000000) return `${(number / 1000000).toFixed(1)}M`;
+    if (number >= 10000) return `${(number / 1000).toFixed(1)}K`;
     if (number >= 1000) return `${(number / 1000).toFixed(1)}K`;
-    return number.toString();
+    return number.toLocaleString("en-US");
   };
   /**
    * Create a DOM element (span) to display the formatted follower count.
@@ -188,16 +189,18 @@
     span.innerText = formattedCount;
     Object.assign(span.style, {
       position: "absolute",
-      bottom: "-2px",
+      top: "-9px",
       left: "50%",
       transform: "translate(-50%)",
-      fontSize: "8px",
-      fontWeight: "bold",
-      color: "#ffffff",
-      backgroundColor: "rgb(29, 155, 240)",
-      border: "1px solid #0867d2",
+      fontFamily:
+        '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+      fontSize: "9px",
+      fontWeight: "400",
+      color: "white",
+      backgroundColor: "#1d9bf0",
+      border: "1px solid white",
       borderRadius: "9999px",
-      padding: "0px 4px",
+      padding: "0px 4px 1px",
       whiteSpace: "nowrap",
     });
     return span;
@@ -211,7 +214,7 @@
   const updateFollowerCounts = () => {
     userCache.forEach((user, screen_name) => {
       const profileLinks = document.querySelectorAll(
-        `a[href*="/${screen_name}"]` // Modified selector to be more robust
+        `a[href="/${screen_name}"], a[href*="/${screen_name}"]` // Both exact match and contains for robustness
       );
 
       profileLinks.forEach((link) => {
