@@ -41,7 +41,6 @@ Ensure you have a userscript manager installed before proceeding:
 Enjoying this script? Your support keeps it going! Here’s how you can contribute:
 
 - ⭐ **Star the Repository** on GitHub.
-- ☕ **Donate to support:** [![Donate via PayPal](https://img.shields.io/badge/Donate-PayPal-blue?logo=paypal)](https://www.paypal.com/donate/?hosted_button_id=DUZBXEKUJGKLE)
 
 ---
 
