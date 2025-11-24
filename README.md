@@ -45,12 +45,4 @@ Enjoying this script? Your support keeps it going! Here’s how you can contribu
 
 ---
 
-## Credits
-
-This project is developed and maintained by:
-
-- [Mohammad Khani](https://twitter.com/m_khani65) – [Amm1rr.com](https://amm1rr.com)
-
----
-
 Thank you for your support!
